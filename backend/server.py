@@ -422,6 +422,12 @@ async def create_invoice(invoice: Invoice):
     invoice.total_amount = totals["total_amount"]
     
     invoice_dict = invoice.dict()
+    # Convert date objects to strings for MongoDB storage
+    if isinstance(invoice_dict.get('issue_date'), date):
+        invoice_dict['issue_date'] = invoice_dict['issue_date'].isoformat()
+    if isinstance(invoice_dict.get('due_date'), date):
+        invoice_dict['due_date'] = invoice_dict['due_date'].isoformat()
+    
     invoices_collection.insert_one(invoice_dict)
     return {"message": "Invoice created successfully", "invoice_id": invoice.invoice_id}
 
