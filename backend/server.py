@@ -528,6 +528,10 @@ async def generate_invoice_pdf_endpoint(invoice_id: str):
 @app.post("/api/payments")
 async def create_payment(payment: Payment):
     payment_dict = payment.dict()
+    # Convert date objects to strings for MongoDB storage
+    if isinstance(payment_dict.get('payment_date'), date):
+        payment_dict['payment_date'] = payment_dict['payment_date'].isoformat()
+    
     payments_collection.insert_one(payment_dict)
     
     # Update invoice payment status
