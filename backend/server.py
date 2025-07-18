@@ -453,6 +453,12 @@ async def update_invoice(invoice_id: str, invoice: Invoice):
     invoice.updated_at = datetime.utcnow()
     
     invoice_dict = invoice.dict()
+    # Convert date objects to strings for MongoDB storage
+    if isinstance(invoice_dict.get('issue_date'), date):
+        invoice_dict['issue_date'] = invoice_dict['issue_date'].isoformat()
+    if isinstance(invoice_dict.get('due_date'), date):
+        invoice_dict['due_date'] = invoice_dict['due_date'].isoformat()
+    
     result = invoices_collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": invoice_dict}
